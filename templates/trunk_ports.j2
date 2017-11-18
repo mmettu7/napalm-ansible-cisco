@@ -1,0 +1,43 @@
+{% for group,trunk in trunk_ports.iteritems() if inventory_hostname in groups[group] %}
+{% for item in trunk %}
+{% for port in item.ports %}
+{% if "-" in port|string %}
+interface range {{ port }}
+{% else %}
+interface {{ port }}
+{% endif %}
+{% if item.group is not defined %}
+{% if item.description is defined %}
+ description {{ item.description }}
+{% endif %}
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+{% for key,value in allowed_vlans.iteritems() if inventory_hostname in groups[key] %}
+ switchport trunk allowed vlan {{ value|join_format }}
+{% endfor %}
+ switchport trunk native vlan {{ vlan_01['native'].id }}
+{% endif %}
+{% if item.group is defined %}
+ channel-group {{ item.group }} mode on
+{% endif %}
+!
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% for group,trunk in trunk_ports.iteritems() if inventory_hostname in groups[group] %}
+{% for item in trunk %}
+{% if item.group is defined %}
+interface Port-channel{{ item.group }}
+{% if item.description is defined %}
+ description {{ item.description }}
+{% endif %}
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+{% for key,value in allowed_vlans.iteritems() if inventory_hostname in groups[key] %}
+ switchport trunk allowed vlan {{ value|join_format }}
+{% endfor %}
+ switchport trunk native vlan {{ vlan_01['native'].id }}
+{% endif %}
+!
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,57 @@
+---
+- name: access switch configs
+  hosts: acc
+  gather_facts: no
+  connection: local
+  serial: 1
+  vars:
+    conf_dir: '.configs/{{ inventory_hostname }}'
+  vars_files:
+    - vars/lan_switching.yml
+  tasks:
+  - block:
+    - name: delete existing directory config
+      file: path='{{ conf_dir }}' state=absent
+      changed_when: no
+      check_mode: no
+    - name: create new directory config
+      file: path='{{ conf_dir }}' state=directory
+      changed_when: no
+      check_mode: no
+    - name: generate configurations
+      template: src='templates/{{ item }}.j2' dest='{{ conf_dir }}/{{ item }}.conf'
+      with_items:
+        - stp
+        - access_ports
+        - trunk_ports
+      changed_when: no
+      check_mode: no
+    - name: assemble all configurations snippets
+      assemble: src='{{ conf_dir }}/' dest='{{ conf_dir }}/assembled.conf'
+      changed_when: no
+      check_mode: no
+    tags: [config,push,all]
+
+  - block:
+    - name: retrieve vlans
+      include: 'ntc_show/vlan_brief.yml'
+    - name: set active vlan
+      set_fact: active_vlan='{{ show_vlan.response|map(attribute='vlan_id')|list }}'
+    - name: push vlan config
+      ios_config: src='templates/vlan.j2'
+    tags: [vlan,all]
+
+  - block:
+    - name: merge configs
+      napalm_install_config:
+        hostname: "{{ inventory_hostname }}"
+        username: "{{ ansible_user }}"
+        dev_os: "ios"
+        password: "{{ ansible_ssh_pass }}"
+        config_file: "{{ conf_dir }}/assembled.conf"
+        commit_changes: true
+        replace_config: false
+        get_diffs: true
+        diff_file: "{{ conf_dir }}/diff"
+        archive_file: '{{ conf_dir }}/bak'
+    tags: [push,all]

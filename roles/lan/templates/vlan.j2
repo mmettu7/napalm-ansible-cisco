@@ -1,6 +1,5 @@
 {% set vlans = vlan_01.iteritems() %}
 {% for key,value in vlans %}
-{% if value.id|string not in active_vlan %}
 {% if 'dist' in group_names %}
 vlan {{ value.id }}
  name {{ key }}
@@ -9,6 +8,5 @@ vlan {{ value.id }}
 vlan {{ value.id }}
  name {{ key }}
 !
-{% endif %}
 {% endif %}
 {% endfor %}

@@ -1,0 +1,31 @@
+---
+- name: access switch configs
+  hosts: dist
+  gather_facts: no
+  connection: local
+  serial: 1
+  vars:
+    conf_dir: '.configs/{{ inventory_hostname }}'
+  vars_files:
+    - vars/lan_switching.yml
+    - vars/interfaces.yml
+  tasks:
+    - file: path='{{ conf_dir }}' state=absent
+      changed_when: no
+      check_mode: no
+    - file: path='{{ conf_dir }}' state=directory
+      changed_when: no
+      check_mode: no
+    - template: src='templates/{{ item }}.j2' dest='{{ conf_dir }}/{{ item }}.conf'
+      with_items:
+#        - stp
+#        - trunk_ports
+#        - svi
+#        - hsrp
+        - x_interfaces
+      changed_when: no
+      check_mode: no
+      tags: config
+#    - assemble: src='{{ conf_dir }}/' dest='{{ conf_dir }}/assembled.conf'
+#      changed_when: no
+#      check_mode: no

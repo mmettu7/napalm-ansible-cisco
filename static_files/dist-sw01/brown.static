@@ -1,0 +1,54 @@
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname dist-sw01
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$yuUM$bxOS8DH8Skdan93mcrNQ8.
+!
+username rey privilege 15 password 0 cisco
+no aaa new-model
+!
+ip domain-name enableconfig.wordpress.com
+ip cef
+no ipv6 cef
+!
+!
+archive
+ path flash:archive
+ write-memory
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+interface GigabitEthernet0/0
+ description oob;
+ no switchport
+ ip address 10.0.0.101 255.255.255.0
+ negotiation auto
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip ssh version 2
+ip scp server enable
+!
+control-plane
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!

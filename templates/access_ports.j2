@@ -1,0 +1,20 @@
+{% if inventory_hostname in access_ports %}
+{% for item in access_ports[inventory_hostname] %}
+{% for port in item.ports %}
+{% if "-" in port|string %}
+interface range {{ port }}
+{% else %}
+interface {{ port }}
+{% endif %}
+ switchport mode access
+ switchport access vlan {{ vlan_01[item.data].id }}
+{% if item.voice is defined %}
+ switchport voice vlan {{ vlan_01[item.voice].id }}
+{% endif %}
+{% if item.group is defined %}
+ channel-group {{ item.group }} mode on
+{% endif %}
+!
+{% endfor %}
+{% endfor %}
+{% endif %}

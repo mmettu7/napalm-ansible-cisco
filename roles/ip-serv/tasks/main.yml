@@ -1,0 +1,7 @@
+---
+- name: hsrp
+  template:
+    src: 'hsrp.j2'
+    dest: '{{ host_tmpdir }}/b_hsrp.conf'
+  changed_when: no
+  check_mode: no

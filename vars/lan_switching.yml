@@ -1,0 +1,61 @@
+---
+vlan_01:
+  accounting: { id: 30, subnet: '10.1.30.0/24', root: 'dist_sw01', switch: 'acc1' }
+  management: { id: 31,  subnet: '10.1.31.0/24', root: 'dist_sw01', switch: 'acc1' }
+  management3: { id: 32,  subnet: '10.1.31.0/24', root: 'dist_sw01', switch: 'acc1' }
+  management4: { id: 33,  subnet: '10.1.31.0/24', root: 'dist_sw01', switch: 'acc1' }
+  voice01: { id: 10, subnet: '10.1.10.0/24', root: 'dist_sw01', switch: 'acc1' }
+  voice010: { id: 100, subnet: '10.1.10.0/24', root: 'dist_sw01', switch: 'acc1' }
+  finance: { id: 50, subnet: '10.1.50.0/24', root: 'dist_sw02', switch: 'acc2' }
+  marketing: { id: 51,  subnet: '10.1.51.0/24', root: 'dist_sw02', switch: 'acc2' }
+  voice02: { id: 11, subnet: '10.1.11.0/24', root: 'dist_sw02', switch: 'acc2' }
+  native: { id: 1000, root: 'dist_sw01', switch: acc }
+
+access_ports:
+  acc_sw1:
+  - ports:
+    - GigabitEthernet1/0
+    - GigabitEthernet1/1
+    data: accounting
+    voice: voice01
+  - ports:
+    - GigabitEthernet1/2
+    - GigabitEthernet1/3
+    data: management
+    voice: voice01
+  acc_sw2:
+  - ports:
+    - GigabitEthernet1/0
+    - GigabitEthernet1/1
+    data: finance
+    voice: voice02
+  - ports:
+    - GigabitEthernet1/2
+      - GigabitEthernet1/3
+    data: marketing
+    voice: voice02
+
+trunk_ports:
+  acc:
+  - group: 1
+    ports:
+    - GigabitEthernet2/0
+    - GigabitEthernet2/1
+  - group: 2
+    ports:
+    - GigabitEthernet2/2
+    - GigabitEthernet2/3
+  dist:
+  - group: 1
+    ports:
+    - GigabitEthernet3/0
+    - GigabitEthernet3/1
+  - group: 2
+    ports:
+    - GigabitEthernet3/2
+    - GigabitEthernet3/3
+
+allowed_vlans:
+  acc1: "{{ vlan_01.values()|selectattr('switch', 'equalto', 'acc1')|map(attribute='id')|list + vlan_01.values()|selectattr('switch', 'equalto', 'acc')|map(attribute='id')|list }}"
+  acc2: "{{ vlan_01.values()|selectattr('switch', 'equalto', 'acc2')|map(attribute='id')|list + vlan_01.values()|selectattr('switch', 'equalto', 'acc')|map(attribute='id')|list }}"
+  dist: "{{ vlan_01.values()|map(attribute='id')|list }}"

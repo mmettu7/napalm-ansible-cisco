@@ -18,5 +18,4 @@
     - set_fact: difference_02="{{ active_vlan_id|difference(var_vlan_id) }}"
 
     - name: sync vlans
-      ios_config:
-        src: templates/sync-vlans.j2
+      ios_config: src="templates/sync-vlans.j2"

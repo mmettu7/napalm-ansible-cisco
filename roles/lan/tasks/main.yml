@@ -1,0 +1,16 @@
+---
+- name: vlan
+  template: src=vlan.j2 dest='{{ host_tmpdir }}/1_vlan.conf'
+  changed_when: no
+  check_mode: no
+  tags: conf
+- name: spanning-tree
+  template: src='stp.j2' dest='{{ host_tmpdir }}/2_stp.conf'
+  changed_when: no
+  check_mode: no
+  tags: conf
+- name: trunk ports
+  template: src='trunk-ports.j2' dest='{{ host_tmpdir }}/3_trunk.conf'
+  changed_when: no
+  check_mode: no
+  tags: conf

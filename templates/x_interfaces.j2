@@ -1,0 +1,13 @@
+{% for item in interfaces[inventory_hostname] %}
+interface {{ item.name }}
+ {{ 'no switchport' if item.routed else "" }}
+{% if item.ip == 'dhcp' %}
+ ip address dhcp
+{% else %}
+ ip address {{ item.ip|ipaddr('address') }} {{ item.ip|ipaddr('netmask') }}
+{% endif %}
+ {{ 'shutdown' if item.enabled is defined and not item.enabled else "" }}
+ {{ 'no shutdown' if item.enabled is defined and item.enabled else "" }}
+!
+{% endfor %}
+end

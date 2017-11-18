@@ -1,0 +1,12 @@
+---
+- name: access switch configs
+  hosts: acc
+  gather_facts: no
+  connection: local
+  serial: 1
+  vars_files:
+    - vars/lan_switching.yml
+  tasks:
+    - include: 'ntc_show/vlan_brief.yml'
+    - set_fact: active_vlan='{{ show_vlan.response|map(attribute='vlan_id')|list }}'
+    - ios_config: src='templates/vlan.j2'

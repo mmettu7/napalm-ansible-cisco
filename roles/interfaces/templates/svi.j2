@@ -1,10 +1,13 @@
-{% for key,value in vlan_01.iteritems() if key != 'native' %}
+{% for host in groups['acc'] -%}
+{% set vlans = hostvars[host]['vlan_01'] %}
+{% for key,value in vlans|dictsort -%}
 {% set net_id = value.subnet|regex_replace('(.*\.)(.*)$', '\\1') %}
 {% set net_mask = value.subnet|ipaddr('netmask') %}
 interface Vlan{{ value.id }}
  description {{ key }}
  bandwidth 10000
- ip address {{ net_id }}{{ inventory_hostname.split('_sw')[1] }} {{ net_mask }}
+ ip address {{ net_id }}{{ svi_host_id }} {{ net_mask }}
  delay 150
 !
 {% endfor %}
+{% endfor -%}

@@ -3,26 +3,14 @@
   hosts: all
   gather_facts: no
   connection: local
-  vars:
-    conf_dir: '.configs/{{ inventory_hostname }}'
   vars_files:
     - vars/interfaces.yml
   tasks:
-  - file: path='{{ conf_dir }}' state=absent
-  - file: path='{{ conf_dir }}' state=directory
-  - template: src='templates/{{ item }}.j2' dest='{{ conf_dir }}'/{{ item }}.conf'
-    with_items:
-#      - vlan
-#      - access_ports
-#      - stp
-#      - trunk_ports
-#      - svi
-#      - hsrp
-      - interfaces
+
+  - set_fact:
+      test1: "{{ interfaces[inventory_hostname] }}"
 
 
-#  - set_fact:
-#        test1: "{{ vlan_01.values()|selectattr('switch', 'equalto', 'acc1')|map(attribute='id')|list + vlan_01.values()|selectattr('switch', 'equalto', 'acc')|map(attribute='id')|list }}"
 #  - set_fact:
 #        test2: "{{ vlan_01.values()|map(attribute='id')|list|join_format }}"
 #    with_dict: "{{ vlan_01 }}"

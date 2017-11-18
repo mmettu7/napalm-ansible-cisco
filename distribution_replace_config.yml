@@ -1,0 +1,58 @@
+---
+- name: distribution switch configs
+  hosts: dist
+  gather_facts: no
+  connection: local
+  serial: 1
+  vars:
+    conf_dir: '.compiled'
+
+  pre_tasks:
+    - set_fact:
+        host_tmpdir: "{{ conf_dir }}/{{ inventory_hostname }}"
+      changed_when: no
+      check_mode: no
+
+    - file:
+        path: '{{ host_tmpdir }}'
+        state: absent
+      changed_when: no
+      check_mode: no
+
+    - file:
+        path: '{{ host_tmpdir }}'
+        state: directory
+      changed_when: no
+      check_mode: no
+
+- hosts: dist
+  connection: local
+  gather_facts: no
+  roles:
+    - interfaces
+
+- hosts: dist
+  connection: local
+  gather_facts: no
+  roles:
+    - brownfield
+
+
+  post_tasks:
+    - assemble:
+        src: '{{ host_tmpdir }}/'
+        dest: '{{ host_tmpdir }}/assembled.conf'
+      changed_when: no
+      check_mode: no
+
+    - name: load configs
+      napalm_install_config:
+        hostname: "{{ inventory_hostname }}"
+        username: "{{ user }}"
+        dev_os: "ios"
+        password: "{{ pass }}"
+        config_file: "{{ host_tmpdir }}/assembled.conf"
+        commit_changes: "{{ not ansible_check_mode }}"
+        replace_config: true
+        get_diffs: true
+        diff_file: "{{ host_tmpdir }}/diff"

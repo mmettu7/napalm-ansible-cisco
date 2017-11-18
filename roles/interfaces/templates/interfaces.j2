@@ -1,0 +1,13 @@
+{% for i in interfaces %}
+interface {{ i.name }}
+ {{ 'no switchport' if i.routed else "" }}
+ {% if i.ip == 'dhcp' -%}
+ ip address dhcp
+ {% else -%}
+ ip address {{ i.ip|ipaddr('address') }} {{ i.ip|ipaddr('netmask') }}
+ {% endif -%}
+ {{ 'shutdown' if not i.enabled else "" }}
+ negotiation auto
+!
+{% endfor %}
+end

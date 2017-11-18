@@ -1,0 +1,23 @@
+interfaces:
+  dist_sw01:
+      - name: 'GigabitEthernet0/1'
+        ip: 192.168.1.1/24
+        routed: true
+        description: 'link_to_dist_sw02'
+        enabled: false
+      - name: 'GigabitEthernet0/2'
+        ip: 192.168.2.1/24
+        routed: true
+        description: 'link_to_edge_router_01'
+#        enabled: true
+  dist_sw02:
+      - name: 'GigabitEthernet0/1'
+        ip: 192.168.3.1/24
+        routed: true
+        description: 'link_to_dist_sw01'
+#        enabled: true
+      - name: 'GigabitEthernet0/2'
+        ip: 192.168.4.1/24
+        routed: true
+        description: 'link_to_edge_router_01'
+#        enabled: true

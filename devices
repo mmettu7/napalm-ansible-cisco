@@ -1,11 +1,21 @@
 [dist]
-dist-sw01 ansible_hostname=dist-sw01
-dist-sw02 ansible_hostname=dist-sw02
+dist_sw1 ansible_host='10.0.0.101'
+dist_sw2 ansible_host='10.0.0.102'
 
-[acc]
-acc-sw01 ansible_hostname=acc-sw01
-acc-sw02 ansible_hostname=acc-sw02
+[acc:children]
+acc1
+acc2
+
+[acc1]
+acc_sw1 ansible_host='10.0.0.121'
+
+[acc2]
+acc_sw2 ansible_host='10.0.0.122'
 
 [switches:children]
 dist
 acc
+
+[all:vars]
+ansible_user=rey
+ansible_ssh_pass=cisco

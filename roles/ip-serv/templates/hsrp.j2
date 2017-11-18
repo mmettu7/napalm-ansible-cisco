@@ -1,13 +1,15 @@
-{% for key,value in vlan_01.iteritems() if key != 'native' %}
+{% for host in groups['acc'] -%}
+{% set vlans = hostvars[host]['vlan_01'] %}
+{% for key,value in vlans|dictsort -%}
 {% set net_id = value.subnet|regex_replace('(.*\.)(.*)$', '\\1') %}
-{% set net_mask = value.subnet|ipaddr('netmask') %}
-interface Vlan{{ value.id }}
+interface vlan{{ value.id }}
  standby version 2
  standby 1 ip {{ net_id }}{{ hsrp_vip|default('254') }}
  standby 1 timers msec 500 msec 750
-{% if value.root == inventory_hostname %}
+ {% if value.root == ansible_hostname -%}
  standby 1 preempt delay minimum 300
  standby 1 priority 110
-{% endif %}
+ {% endif -%}
 !
+{% endfor %}
 {% endfor %}

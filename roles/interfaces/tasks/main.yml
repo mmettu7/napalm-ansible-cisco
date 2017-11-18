@@ -1,0 +1,13 @@
+---
+- name: interfaces
+  template:
+    src: 'interfaces.j2'
+    dest: '{{ host_tmpdir }}/z_interfaces.conf'
+  changed_when: no
+  check_mode: no
+- name: svi
+  template:
+    src: 'svi.j2'
+    dest: '{{ host_tmpdir }}/a_svi.conf'
+  changed_when: no
+  check_mode: no
