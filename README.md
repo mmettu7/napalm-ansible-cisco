@@ -1,2 +1,2 @@
 # napalm-ansible-cisco
-ansible playbook to configure cisco ios devices using napalm (network automation and programmability abstraction layer with multivendor support)
+Automate Cisco IOS Device Configuration using NAPALM
